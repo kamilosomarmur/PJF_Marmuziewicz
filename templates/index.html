@@ -1,13 +1,37 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    Python Project v3
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block head %}
+
+{% endblock %}
+
+
+
+{% block body %}
+    <div class="content">
+        <h1>Student Kanban</h1>
+        <table>
+            <tr>
+                <th>Zadanie</th>
+                <th>Dodano</th>
+                <th>Akcje</th>
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.content }}</td>
+                    <td>{{ task.date_created.date() }}</td>
+                    <td>
+                        <a href="">Usuń</a>
+                        <br>
+                        <a href="">Edytuj</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="form">
+            <from action="/" method="POST">
+                <input type="text" name="content" id="content">
+                <input type="submit" value="Dodaj zadanie">
+            </from>
+        </div>
+    </div>
+{% endblock %}
