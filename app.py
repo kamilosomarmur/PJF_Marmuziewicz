@@ -29,6 +29,26 @@ def index():  # put application's code here
         tasks = Kanban.query.order_by(Kanban.date_created).all()
         return render_template('index.html', tasks=tasks)
 
-
+@app.route('/delete/<int:id>')
+def delete(id):
+    task_to_delete = Kanban.query.get_or_404(id)
+    try:
+        db.session.delete(task_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        return 'Wystąpił błąd przy usuwaniu zadania'
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    task = Kanban.query.get_or_404(id)
+    if request.method == 'POST':
+        task.content = request.form['content']
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'Wystąpił błąd przy edycji zadania'
+    else:
+        return render_template('edit.html',task=task)
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
