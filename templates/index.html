@@ -4,8 +4,6 @@
 
 {% endblock %}
 
-
-
 {% block body %}
     <div class="content">
         <h1 style="text-align: center">Student Board</h1>
@@ -20,15 +18,12 @@
                 <th>DONE</th>
             </tr>
             <tr>
-                <td>
+                <td class="drop-container" id="todo">
                     <table>
-                        <tr>
-                            <th>Zadanie</th>
-                            <th>Dodano</th>
-                            <th>Akcje</th>
-                        </tr>
+
                         {% for task in tasks %}
-                            <tr>
+                            {% if task.column == "todo" %}
+                            <tr id="{{ task.id }}" class="draggable-task" draggable="true" data-column="{{ task.column }}">
                                 <td>{{ task.content }}</td>
                                 <td>{{ task.date_created.date() }}</td>
                                 <td>
@@ -37,18 +32,16 @@
                                     <a href="/edit/{{ task.id }}">Edytuj</a>
                                 </td>
                             </tr>
+                            {% endif %}
                         {% endfor %}
                     </table>
                 </td>
-                <td>
+                <td class="drop-container" id="inprogress">
                     <table>
-                        <tr>
-                            <th>Zadanie</th>
-                            <th>Dodano</th>
-                            <th>Akcje</th>
-                        </tr>
+
                         {% for task in tasks %}
-                            <tr>
+                            {% if task.column == "inprogress" %}
+                            <tr id="{{ task.id }}" class="draggable-task" draggable="true" data-column="{{ task.column }}">
                                 <td>{{ task.content }}</td>
                                 <td>{{ task.date_created.date() }}</td>
                                 <td>
@@ -57,18 +50,16 @@
                                     <a href="/edit/{{ task.id }}">Edytuj</a>
                                 </td>
                             </tr>
+                            {% endif %}
                         {% endfor %}
                     </table>
                 </td>
-                <td>
+                <td class="drop-container" id="done">
                     <table>
-                        <tr>
-                            <th>Zadanie</th>
-                            <th>Dodano</th>
-                            <th>Akcje</th>
-                        </tr>
+
                         {% for task in tasks %}
-                            <tr>
+                            {% if task.column == "done" %}
+                            <tr id="{{ task.id }}" class="draggable-task" draggable="true" data-column="{{ task.column }}">
                                 <td>{{ task.content }}</td>
                                 <td>{{ task.date_created.date() }}</td>
                                 <td>
@@ -77,6 +68,7 @@
                                     <a href="/edit/{{ task.id }}">Edytuj</a>
                                 </td>
                             </tr>
+                            {% endif %}
                         {% endfor %}
                     </table>
                 </td>
@@ -91,4 +83,56 @@
             </form>
         </div>
     </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    let tasks = document.querySelectorAll(".draggable-task");
+
+    tasks.forEach(function (task) {
+        task.addEventListener("dragstart", function (e) {
+            e.dataTransfer.setData("text/plain", task.id);
+        });
+    });
+
+    let dropContainers = document.querySelectorAll(".drop-container");
+
+    dropContainers.forEach(function (container) {
+        container.addEventListener("dragover", function (e) {
+            e.preventDefault();
+        });
+
+        container.addEventListener("drop", function (e) {
+            e.preventDefault();
+            let taskId = e.dataTransfer.getData("text/plain");
+            let draggedTask = document.getElementById(taskId);
+
+            // Move the task to the new container
+            container.appendChild(draggedTask);
+
+            // Update the data-column attribute
+            draggedTask.setAttribute("data-column", container.id);
+
+            // Update the column information in the database using AJAX
+            let taskIdInt = parseInt(taskId);
+            let column = container.id;
+
+            fetch(`/update_column/${taskIdInt}/${column}`, {
+                method: "POST",
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        console.error(data.message);
+                        // If there's an issue, you might want to handle it
+                    }
+                })
+                .catch(error => {
+                    console.error("Error updating column:", error);
+                });
+        });
+    });
+});
+
+</script>
+
 {% endblock %}
