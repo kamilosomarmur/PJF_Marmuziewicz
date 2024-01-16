@@ -19,7 +19,11 @@ class Kanban(db.Model):
 def index():  # put application's code here
     if request.method == 'POST':
         task_content = request.form['content']
-        new_task = Kanban(content=task_content)
+        existing_task = Kanban.query.filter_by(content=task_content).first()
+        if existing_task:
+            return 'Task with the same content already exists'
+        else:
+            new_task = Kanban(content=task_content)
         try:
             db.session.add(new_task)
             db.session.commit()
