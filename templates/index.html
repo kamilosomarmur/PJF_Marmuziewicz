@@ -119,16 +119,6 @@
             fetch(`/update_column/${taskIdInt}/${column}`, {
                 method: "POST",
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        console.error(data.message);
-                        // If there's an issue, you might want to handle it
-                    }
-                })
-                .catch(error => {
-                    console.error("Error updating column:", error);
-                });
         });
     });
 });

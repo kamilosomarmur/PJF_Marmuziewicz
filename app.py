@@ -62,10 +62,8 @@ def update_column(id, column):
 
     try:
         db.session.commit()
-        return jsonify({"message": "Column updated successfully"})
     except:
-        return jsonify({"message": "Error updating column"}), 500
-
+        return 'Wystąpił błąd przy przenoszeniu zadania'
 
 if __name__ == '__main__':
     app.run(debug=True)
